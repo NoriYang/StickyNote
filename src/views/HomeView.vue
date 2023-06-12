@@ -1,9 +1,16 @@
 <script setup>
-import TheWelcome from '../components/TheWelcome.vue'
+import HeaderComponent from '@/components/HeaderComponent.vue'
 </script>
 
 <template>
-  <main>
-    <TheWelcome />
-  </main>
+  <div id="HomeView">
+    <HeaderComponent />
+    <RouterView />
+  </div>
 </template>
+
+<style lang="scss" scoped>
+#HomeView {
+  height: 100vh;
+}
+</style>
