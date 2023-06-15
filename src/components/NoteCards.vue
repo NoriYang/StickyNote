@@ -2,8 +2,6 @@
 import noteData from '@/stores/noteData.js';
 import useModalData from '@/stores/modalData.js';
 
-import { defineEmits } from 'vue';
-
 const emit = defineEmits(['openNoteModalHandler'])
 
 const noteStore = noteData();
@@ -18,10 +16,12 @@ function updateNote(firebaseID) {
 </script>
 
 <template>
-  <div class="row">
-    <div v-for="card of noteStore.getCardLists" :key="card.firebaseID"
+  <div class="row mb-5">
+    <div v-for="card of noteStore.getCardLists"
+      :key="card.firebaseID"
       class="col-12 col-sm-6 col-md-4 g-4">
       <div class="card"
+        :class="{ 'done': card.data.status === 'done' }"
         @click="updateNote(card.firebaseID)">
         <div class="card-body">
           <div class="card-titles">
@@ -48,6 +48,11 @@ function updateNote(firebaseID) {
   border-radius: 5px;
   min-height: 200px;
   border: 1px solid rgba(0, 0, 0, 0.2);
+
+  &.done {
+    color: rgba(black, 0.5);
+    background-color: rgba(#eef079, 0.5);
+  }
 }
 
 .card-titles {

@@ -1,14 +1,30 @@
 <script setup>
 import { ref } from 'vue'
-import { login } from '@/network/firebaseMethods.js'
+import { login, guestLogin } from '@/network/firebaseMethods.js'
 import { useRouter } from 'vue-router';
 const email = ref('');
 const password = ref('');
 const $router = useRouter();
 
+const errorStatus = ref(false);
+const errorMessage = ref('');
+
+function guestLoginHandler(){
+  guestLogin();
+  $router.push('/');
+}
+
 async function loginButton() {
-  await login(email.value, password.value)
-  $router.push('/')
+  let message = await login(email.value, password.value)
+  if (message.status === false) {
+    errorStatus.value = true;
+    errorMessage.value = '帳號密碼有誤！請重新輸入';
+  }
+  if (message.status === true) {
+    errorStatus.value = false;
+    errorMessage.value = '';
+    $router.push('/')
+  }
 }
 
 </script>
@@ -40,8 +56,13 @@ async function loginButton() {
           aria-label="password"
           aria-describedby="password">
       </div>
+      <p class="guest-text" @click="guestLoginHandler">訪客登入</p>
+      <div class="mb-2 text-danger" v-if="errorStatus">
+        {{ errorMessage }}
+      </div>
       <div class="d-grid login-button">
-        <button class="btn btn-primary"
+        <button :disabled="email == '' || password == ''"
+          class="btn btn-primary"
           type="button"
           @click="loginButton">登入</button>
       </div>
@@ -64,14 +85,27 @@ async function loginButton() {
   margin-top: 55px;
   margin-bottom: 25px;
 }
+.guest-text { 
+  margin: 0;
+  margin-bottom: 5px;
+  text-align: right;
+  color: rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+}
+.guest-text:hover{ 
+  color: black
+}
 
 .login-wrapper {
   position: relative;
-  width: 300px;
-  height: 300px;
-  background-color: white;
+  width: 500px;
+  height: 350px;
+  background-color: rgba(255, 255, 255, 0.5);
+  box-shadow: rgba(0, 0, 0, 0.1) 2px 4px 4px;
   border-radius: 10px;
-  padding: 10px;
+  padding-left: 25px;
+  padding-right: 25px;
+
 }
 
 .login-button {

@@ -6,25 +6,33 @@ import {
   browserSessionPersistence,
   updateProfile,
 } from "firebase/auth";
-import { doc, addDoc, getDocs, collection, updateDoc } from "firebase/firestore";
+import { doc, addDoc, getDocs, collection, updateDoc, deleteDoc } from "firebase/firestore";
 
 async function loginEmail(email, password) {
-  await signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      const user = userCredential.user;
-      console.log(userCredential, user)
+  return await signInWithEmailAndPassword(auth, email, password)
+    .then(() => {
+      return {
+        status: true,
+      }
     })
     .catch((error) => {
-      const errorCode = error.code;
+      // const errorCode = error.code;
       const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
+      return {
+        status: false,
+        message: errorMessage
+      }
     });
 }
-
+export const guestLogin = async () => {
+  return await setPersistence(auth, browserSessionPersistence).then(() => {
+    return loginEmail('guest007@gmail.com', '123456789');
+  })
+}
 // 登入並使用 Session 機制 
-export const login = (email, password) => {
-  setPersistence(auth, browserSessionPersistence).then(async () => {
-    await loginEmail(email, password);
+export const login = async (email, password) => {
+  return await setPersistence(auth, browserSessionPersistence).then(() => {
+    return loginEmail(email, password);
   })
 }
 // 登出
@@ -40,7 +48,7 @@ export const updateDisplayName = async (newName) => {
 }
 
 export const getNotes = async () => {
-  const querySnapshot = await getDocs(collection(db, "notes"));
+  const querySnapshot = await getDocs(collection(db, "user", auth.currentUser.uid, 'notes'));
   let noteData = [];
   querySnapshot.forEach((doc) => {
     let payload = {
@@ -53,18 +61,23 @@ export const getNotes = async () => {
 }
 
 export const addNote = async (payload) => {
-  const docRef = await addDoc(collection(db, "notes"), payload);
+  const docRef = await addDoc(collection(db, "user", auth.currentUser.uid, 'notes'), payload);
   return docRef.id
 }
 
 export const updateNoteStatus = async (firebaseID, status) => {
-  const Ref = doc(db, "notes", firebaseID);
+  const Ref = doc(db, "user", auth.currentUser.uid, 'notes', firebaseID);
   await updateDoc(Ref, {
     status: status,
   });
 }
 
 export const updateNote = async (firebaseID, payload) => {
-  const Ref = doc(db, "notes", firebaseID)
+  const Ref = doc(db, "user", auth.currentUser.uid, 'notes', firebaseID)
   updateDoc(Ref, payload);
+}
+
+export const delNote = async (firebaseID) => {
+  const docRef = doc(db, 'user', auth.currentUser.uid, 'notes', firebaseID)
+  await deleteDoc(docRef);
 }

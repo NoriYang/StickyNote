@@ -56,6 +56,9 @@ export default defineStore('note store', {
     },
     updateStatus(id, status){
       this.cardLists[id].data.status = status;
-    }
+    },
+    delNote(index){
+      this.cardLists.splice(index, 1)
+    } 
   }
 })

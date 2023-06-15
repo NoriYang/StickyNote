@@ -11,6 +11,7 @@ function resetModal() {
 function hideModal() {
   emit('hideNoteModalHandler')
 }
+
 async function updateNote() {
   if (modalStore.modalType === 'new') {
     modalStore.modalData.id = Date.now();
@@ -30,6 +31,11 @@ async function doneHandler() {
 }
 async function removeDoneHandler() {
   await modalStore.updateNoteStatusHandler('doing')
+  hideModal();
+  resetModal();
+}
+async function delHandler(){
+  await modalStore.delNoteHandler()
   hideModal();
   resetModal();
 }
@@ -84,9 +90,16 @@ async function removeDoneHandler() {
                 type="button"
                 @click="doneHandler">完成</button>
               <button v-if="modalStore.modalData.status === 'done'"
-                class="btn btn-danger"
+                class="btn btn-warning"
                 type="button"
                 @click="removeDoneHandler">取消完成</button>
+              <button 
+                type="button"
+                class="btn btn-danger"
+                @click="delHandler"
+              >
+                刪除備註
+              </button>
             </div>
           </div>
         </div>

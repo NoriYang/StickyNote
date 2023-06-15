@@ -2,8 +2,12 @@
 import { userLogout } from '@/network/firebaseMethods.js'
 import { RouterLink } from 'vue-router';
 
+import noteData from '@/stores/noteData.js';
+const noteStore = noteData();
+
 function logout() {
   userLogout();
+  noteStore.$reset();
 }
 </script>
 
@@ -13,10 +17,6 @@ function logout() {
       <RouterLink class="navbar-brand"
         to="/">StickyNote</RouterLink>
       <ul class="navbar-ul ms-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <RouterLink class="nav-link"
-            to="/userInfo">使用者</RouterLink>
-        </li>
         <li class="nav-item">
           <a class="nav-link"
             href="#"

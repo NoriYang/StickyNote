@@ -1,5 +1,10 @@
 import { defineStore } from 'pinia'
-import { addNote, updateNote, updateNoteStatus } from '@/network/firebaseMethods';
+import { 
+  addNote, 
+  updateNote, 
+  updateNoteStatus,
+  delNote
+} from '@/network/firebaseMethods';
 import noteData from '@/stores/noteData.js';
 const noteStore = noteData();
 
@@ -20,6 +25,11 @@ export default defineStore('modal store', {
       }
       noteStore.addNote(payload);
     },
+    async delNoteHandler(){
+      let tempIndex = noteStore.findNoteIndex(this.firebaseID);
+      noteStore.delNote(tempIndex);
+      await delNote(this.firebaseID);
+    },
     async updateNoteHandler() {
       await updateNote(this.firebaseID, this.modalData)
       let tempIndex = noteStore.findNoteIndex(this.firebaseID);
@@ -37,6 +47,6 @@ export default defineStore('modal store', {
       let temp = JSON.parse(JSON.stringify(noteStore.getNote(id)))
       this.firebaseID = temp.firebaseID;
       this.modalData = temp.data;
-    }
+    },
   }
 })
